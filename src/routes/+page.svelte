@@ -7,14 +7,30 @@
 
     let div: HTMLDivElement;
 
+    let history: string[] = []
+
     onMount(() => {
         const ground = Chessground(div, {
             movable: {
                 free: true
             },
+            draggable: {
+                enabled: true,
+                distance: 3,
+                autoDistance: false,
+                showGhost: true
+            },
             animation: {
                 enabled: true,
                 duration: 200
+            }
+        })
+
+        ground.set({
+            events: {
+                move: () => {
+                    history = [...history, ground.getFen()]
+                }
             }
         })
     })
@@ -24,6 +40,12 @@
     <div class="container">
         <div class="child" bind:this={div}></div>
     </div>
+
+    {#if false}
+    {#each history as move}
+        <div>{move}</div>
+    {/each}
+    {/if}
 </main>
 
 <style>
@@ -32,11 +54,11 @@
     }
 
     main {
-        /* center */
         display: flex;
         justify-content: center;
         align-items: center;
         height: 100vh;
+        flex-direction: column;
         
     }
     div.container {
