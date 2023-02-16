@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { Api } from "chessground/api"
     import { Chessground } from "chessground/chessground"
     import { onMount } from "svelte"
     import "chessground/assets/chessground.base.css"
@@ -9,16 +10,12 @@
 
     let history: string[] = []
 
+    let ground: Api;
+
     onMount(() => {
-        const ground = Chessground(div, {
+        ground = Chessground(div, {
             movable: {
                 free: true
-            },
-            draggable: {
-                enabled: true,
-                distance: 3,
-                autoDistance: false,
-                showGhost: true
             },
             animation: {
                 enabled: true,
@@ -34,6 +31,18 @@
             }
         })
     })
+
+    $: if (ground) {
+        if (history.length === 0) {
+            ground.set({
+                fen: "start"
+            })
+        } else {
+            ground.set({
+                fen: history[history.length - 1]
+            })
+        }
+    }
 </script>
 
 <main>
@@ -41,10 +50,14 @@
         <div class="child" bind:this={div}></div>
     </div>
 
-    {#if false}
-    {#each history as move}
-        <div>{move}</div>
-    {/each}
+    {#if history.length > 0}
+        <div class="history">
+            <div>
+                <button on:click={() => history = []}>Reset</button>
+                <button on:click={() => history = history.slice(0, history.length - 1)}>Undo</button>
+            </div>
+            <p>current fen: {history[history.length - 1]}</p>
+        </div>
     {/if}
 </main>
 
