@@ -1,4 +1,4 @@
-# chessground-anim (still building!)
+# [chessground-anim](https://leodog896.github.io/chessground-anim) (still building!)
 
 any-move chess animation system - easily animate PGN games with custom rules
 
