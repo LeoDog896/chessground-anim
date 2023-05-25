@@ -29,7 +29,7 @@
                     history = [...history, ground.getFen()]
                 }
             }
-        })
+        });
     })
 
     $: if (ground) {
@@ -50,15 +50,13 @@
         <div class="child" bind:this={div}></div>
     </div>
 
-    {#if history.length > 0}
-        <div class="history">
-            <div>
-                <button on:click={() => history = []}>Reset</button>
-                <button on:click={() => history = history.slice(0, history.length - 1)}>Undo</button>
-            </div>
-            <p>current fen: {history[history.length - 1]}</p>
+    <div class="history">
+        <div>
+            <button disabled={history.length === 0} on:click={() => history = []}>Reset</button>
+            <button disabled={history.length === 0} on:click={() => history = history.slice(0, history.length - 1)}>Undo</button>
         </div>
-    {/if}
+        <p>current fen: {history[history.length - 1]}</p>
+    </div>
 </main>
 
 <style>
