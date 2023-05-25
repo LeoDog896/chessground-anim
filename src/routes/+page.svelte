@@ -5,10 +5,11 @@
     import "chessground/assets/chessground.base.css"
     import "chessground/assets/chessground.brown.css"
     import "chessground/assets/chessground.cburnett.css"
+    import type { Key } from "chessground/types";
 
     let div: HTMLDivElement;
 
-    let history: string[] = []
+    let history: [fen: string, move: Key[]][] = []
 
     let ground: Api;
 
@@ -20,14 +21,14 @@
             animation: {
                 enabled: true,
                 duration: 200
-            }
-        })
-
-        ground.set({
+            },
             events: {
                 move: () => {
-                    history = [...history, ground.getFen()]
+                    history = [...history, [ground.getFen(), ground.state.lastMove!]];
                 }
+            },
+            drawable: {
+                defaultSnapToValidMove: false
             }
         });
     })
@@ -35,13 +36,28 @@
     $: if (ground) {
         if (history.length === 0) {
             ground.set({
-                fen: "start"
+                fen: "start",
+                lastMove: undefined
             })
         } else {
             ground.set({
-                fen: history[history.length - 1]
+                fen: history[history.length - 1][0],
+                lastMove: history[history.length - 1][1]
             })
         }
+    }
+
+    function reset() {
+        history = [];
+        if (ground) {
+            ground.set({
+                lastMove: undefined
+            });
+        }
+    }
+
+    function undo() {
+        history = history.slice(0, history.length - 1);
     }
 </script>
 
@@ -51,10 +67,8 @@
     </div>
 
     <div class="history">
-        <div>
-            <button disabled={history.length === 0} on:click={() => history = []}>Reset</button>
-            <button disabled={history.length === 0} on:click={() => history = history.slice(0, history.length - 1)}>Undo</button>
-        </div>
+        <button disabled={history.length === 0} on:click={reset}>Reset</button>
+        <button disabled={history.length === 0} on:click={undo}>Undo</button>
         <p>current fen: {history[history.length - 1]}</p>
     </div>
 </main>
@@ -69,12 +83,18 @@
         justify-content: center;
         align-items: center;
         height: 100vh;
+        width: 100vw;
         flex-direction: column;
-        
+        justify-content: space-evenly;
     }
+
     div.container {
         width: 500px;
         height: 500px;
+    }
+
+    div.history {
+        text-align: center;
     }
 
     div.child {
