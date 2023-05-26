@@ -51,7 +51,10 @@
         history = [];
         if (ground) {
             ground.set({
-                lastMove: undefined
+                lastMove: undefined,
+                drawable: {
+                    shapes: []
+                }
             });
         }
     }
