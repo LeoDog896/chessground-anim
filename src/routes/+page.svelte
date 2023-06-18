@@ -16,18 +16,23 @@
 
     // adapted from lichess-examples
     function toDests(fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"): Map<Key, Key[]> {
-        const whiteChess = new Chess(fen + " w KQkq - 0 2");
-        const blackChess = new Chess(fen + " b KQkq - 0 2");
-        
-        const dests = new Map();
-        SQUARES.forEach(s => {
-            const whiteMoves = whiteChess.moves({square: s, verbose: true});
-            const blackMoves = blackChess.moves({square: s, verbose: true});
+        try {
+            const whiteChess = new Chess(fen + " w KQkq - 0 2");
+            const blackChess = new Chess(fen + " b KQkq - 0 2");
+            
+            const dests = new Map();
+            SQUARES.forEach(s => {
+                const whiteMoves = whiteChess.moves({square: s, verbose: true});
+                const blackMoves = blackChess.moves({square: s, verbose: true});
 
-            if (whiteMoves.length) dests.set(s, whiteMoves.map(m => m.to));
-            if (blackMoves.length) dests.set(s, blackMoves.map(m => m.to));
-        });
-        return dests;
+                if (whiteMoves.length) dests.set(s, whiteMoves.map(m => m.to));
+                if (blackMoves.length) dests.set(s, blackMoves.map(m => m.to));
+            });
+            return dests;
+        } catch (e) {
+            console.error(e);
+            return new Map();
+        }
     }
 
     onMount(() => {
