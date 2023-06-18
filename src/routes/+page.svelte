@@ -6,11 +6,11 @@
     import "chessground/assets/chessground.brown.css"
     import "chessground/assets/chessground.cburnett.css"
     import type { Key } from "chessground/types";
+    import { Chess } from 'chess.js'
 
     let div: HTMLDivElement;
 
     let history: [fen: string, move: Key[]][] = []
-
     let ground: Api;
 
     onMount(() => {
@@ -24,6 +24,7 @@
             },
             events: {
                 move: () => {
+                    console.assert(ground.state.lastMove !== undefined, "lastMove is undefined");
                     history = [...history, [ground.getFen(), ground.state.lastMove!]];
                 }
             },
@@ -40,9 +41,25 @@
                 lastMove: undefined
             })
         } else {
+            const [fen, lastMove] = history[history.length - 1];
+            let check: "white" | "black" | undefined = undefined;
+            try {
+                const whiteGame = new Chess(fen + " w KQkq - 0 2").inCheck();
+                const blackGame = new Chess(fen + " b KQkq - 0 2").inCheck();
+
+                if (whiteGame) {
+                    check = "white";
+                } else if (blackGame) {
+                    check = "black";
+                }
+            } catch (e) {
+                console.error(e);
+            }
+
             ground.set({
-                fen: history[history.length - 1][0],
-                lastMove: history[history.length - 1][1]
+                fen,
+                lastMove,
+                check
             })
         }
     }
